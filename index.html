@@ -79,7 +79,29 @@
   #player:fullscreen .sheet { width: 100vw; max-width: none; border-radius: 0; border: 0; }
   footer { color: #566072; font-size: 12px; margin-top: 48px; border-top: 1px solid var(--line); padding-top: 16px; }
   @media (max-width: 520px) { .grid, .grid.styles { grid-template-columns: 1fr; } }
+  /* entry gate */
+  #gate { display: none; }
+  html.locked #gate { display: grid; }
+  html.locked header, html.locked main, html.locked footer { display: none; }
+  html.locked body { overflow: hidden; }
+  #gate { position: fixed; inset: 0; z-index: 100; place-items: center; background: var(--bg); padding: 20px; }
+  #gate .box { width: min(380px, 92vw); background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px 24px; }
+  #gate h2 { margin: 0 0 6px; text-transform: none; letter-spacing: 0; font-size: 18px; color: var(--fg); }
+  #gate p { margin: 0 0 18px; color: var(--dim); font-size: 13px; }
+  #gate input { width: 100%; padding: 11px 13px; border-radius: 10px; border: 1px solid var(--line); background: #0f1218; color: inherit; font: inherit; }
+  #gate button { margin-top: 12px; width: 100%; padding: 11px 13px; border-radius: 10px; border: 1px solid #2f6f5a;
+           background: #17402f; color: #d1fae5; font: inherit; font-weight: 600; cursor: pointer; }
+  #gate button:hover { background: #1c4c38; }
+  #gate .err { color: #fca5a5; font-size: 13px; min-height: 18px; margin-top: 10px; }
 </style>
+<script>
+  // runs before paint — page stays locked unless the access cookie is already set
+  (function () {
+    var ok = false;
+    try { ok = document.cookie.split('; ').indexOf('dv_pass=f1e9592a') !== -1; } catch (e) {}
+    if (!ok) document.documentElement.className = 'locked';
+  })();
+</script>
 </head>
 <body>
 <header>
@@ -92,6 +114,15 @@
 </header>
 <main id="view"></main>
 <div id="player" class="hidden" role="dialog" aria-modal="true"></div>
+<div id="gate" role="dialog" aria-modal="true">
+  <form class="box" id="gateForm">
+    <h2>dance_videos</h2>
+    <p>Enter the access password to continue.</p>
+    <input id="gatePass" type="password" placeholder="Password" autocomplete="current-password">
+    <button type="submit">Unlock</button>
+    <div class="err" id="gateErr"></div>
+  </form>
+</div>
 <footer>Players are Google Drive's own — nothing is re-hosted here. If a lesson asks for access, the Drive folder hasn't been shared with your Google account.</footer>
 <script>
   const DATA = [{"name":"kizomba","slug":"kizomba","courses":[{"name":"Beginner","slug":"beginner","lessons":[{"id":"1J25tHL6ilUqSo4WHJvUn7Mh2c2ai9AsH","title":"01 - Basic, 3 Steps, 5 Steps, Slow Motion and Rotation","size":757518345,"seconds":1408,"poster":"thumbs/Beginner/01%20-%20Basic%2C%203%20Steps%2C%205%20Steps%2C%20Slow%20Motion%20and%20Rotation.jpg"},{"id":"1iHQv_AlKfGNp1uZPcEYd7vGnkHtsaisK","title":"02 - Woman and Man Saida","size":745298861,"seconds":1048,"poster":"thumbs/Beginner/02%20-%20Woman%20and%20Man%20Saida.jpg"},{"id":"1GxPpRp09luymp_Jh5o5B1jqEkG-6DGie","title":"03 - Balanced move and Touch Steps plus Longer & Double Women Saida","size":598027872,"seconds":1100,"poster":"thumbs/Beginner/03%20-%20Balanced%20move%20and%20Touch%20Steps%20plus%20Longer%20%26%20Double%20Women%20Saida.jpg"},{"id":"1RjroWgJWDa98_ATrOYGW9EgWc8bsHiNE","title":"04 - Mixt Saida & complicated Mixt Saida","size":571839999,"seconds":1056,"poster":"thumbs/Beginner/04%20-%20Mixt%20Saida%20%26%20complicated%20Mixt%20Saida.jpg"},{"id":"1GaVf1nhVyMmjq9c1V6PxpGdAnHNfAzER","title":"05 - Pivot (slow & normal version)","size":611821602,"seconds":1126,"poster":"thumbs/Beginner/05%20-%20Pivot%20(slow%20%26%20normal%20version).jpg"},{"id":"13Cz9-tb53MEfkq11Asu2THn1Cvyqvebe","title":"06 - Normal & Infinite Square","size":543711946,"seconds":1014,"poster":"thumbs/Beginner/06%20-%20Normal%20%26%20Infinite%20Square.jpg"},{"id":"1ySU1R7EsEAjAEPBSE3pDJQ8n2Xxxe4pG","title":"07 - Follower turn, meet her halfway, and The Walk","size":599724969,"seconds":1113,"poster":"thumbs/Beginner/07%20-%20Follower%20turn%2C%20meet%20her%20halfway%2C%20and%20The%20Walk.jpg"},{"id":"1TRfAyM7biT2CAsfO_d0KbS3naaCavZaq","title":"08 - Shadow In & Out Woman & Saida Shadow version","size":525602011,"seconds":990,"poster":"thumbs/Beginner/08%20-%20Shadow%20In%20%26%20Out%20Woman%20%26%20Saida%20Shadow%20version.jpg"},{"id":"1uJtpMAptB6Bmlv9whVibhXL9kHO4fF5M","title":"09 - Ocho (slow & normal)","size":524290641,"seconds":978,"poster":"thumbs/Beginner/09%20-%20Ocho%20(slow%20%26%20normal).jpg"},{"id":"1m0uUkjft3rGgzwsxXl6GPHnClEhO9Kdp","title":"10 - Side Lean & Rhythm variations","size":691903484,"seconds":1306,"poster":"thumbs/Beginner/10%20-%20Side%20Lean%20%26%20Rhythm%20variations.jpg"},{"id":"1_T2lL45V9fShM6II0HNsYVCxccDgAoPC","title":"11 - Saida & Friends","size":544394948,"seconds":1007,"poster":"thumbs/Beginner/11%20-%20Saida%20%26%20Friends.jpg"},{"id":"1N1gOZPT6KWFYrgP0CuGj1ATabx1yo6xq","title":"12 - Playing with the directions","size":559350266,"seconds":1032,"poster":"thumbs/Beginner/12%20-%20Playing%20with%20the%20directions.jpg"},{"id":"1csxzlsVQ-Xchx6uBXBS1DXL8tyFdwl7v","title":"14 - Quick Steps and Double Lean","size":507984806,"seconds":908,"poster":"thumbs/Beginner/14%20-%20Quick%20Steps%20and%20Double%20Lean.jpg"},{"id":"1X3mAmo5kN8949Cw7iMEdfY_4YalBtDlt","title":"15 - Shadow Walk & Stuff","size":498639554,"seconds":937,"poster":"thumbs/Beginner/15%20-%20Shadow%20Walk%20%26%20Stuff.jpg"},{"id":"1Jw7MNQmnGam7_9CS3vAoszXbEgRiUekK","title":"16 - Back and Forth","size":655855301,"seconds":1190,"poster":"thumbs/Beginner/16%20-%20Back%20and%20Forth.jpg"}],"bytes":8935964605,"seconds":16213,"poster":"thumbs/Beginner/01%20-%20Basic%2C%203%20Steps%2C%205%20Steps%2C%20Slow%20Motion%20and%20Rotation.jpg"}]}];
@@ -266,6 +297,24 @@
     if (modalOpen && e.key === 'ArrowLeft') step(-1);
     if (modalOpen && e.key === 'ArrowRight') step(1);
   });
+  // entry gate: cookie remembers the unlock for 30 days
+  const PASS_HASH = 'f1e9592a';
+  const fnv1a8 = (s) => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, '0'); };
+  document.getElementById('gateForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('gatePass');
+    if (fnv1a8('dance_videos:' + input.value) === PASS_HASH) {
+      const secure = location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = 'dv_pass=' + PASS_HASH + '; Max-Age=2592000; Path=/; SameSite=Lax' + secure;
+      document.documentElement.classList.remove('locked');
+      input.value = '';
+    } else {
+      document.getElementById('gateErr').textContent = 'Wrong password.';
+      input.select();
+    }
+  });
+  if (document.documentElement.classList.contains('locked')) setTimeout(() => document.getElementById('gatePass').focus(), 60);
+
   window.addEventListener('hashchange', route);
   route();
 </script>
