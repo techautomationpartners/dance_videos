@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>dance_videos</title>
-<meta name="description" content="Dance course archive — 13 lessons streamed from Google Drive.">
+<meta name="description" content="Dance course archive — 15 lessons streamed from Google Drive.">
 <style>
   :root { color-scheme: dark; --bg:#0b0d12; --panel:#14171f; --panel2:#1a1e27; --line:#242a36;
           --fg:#e8eaf0; --dim:#98a2b3; --accent:#6ee7b7; }
@@ -58,13 +58,32 @@
   .bar .x { color: var(--dim); }
   .empty { color: var(--dim); padding: 36px 0; }
   .hidden { display: none !important; }
+  /* full-screen player */
+  #player { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+            background: #05070ae6; backdrop-filter: blur(6px); padding: clamp(8px, 3vw, 40px); }
+  #player .sheet { width: min(1200px, 96vw); background: var(--panel); border: 1px solid var(--line);
+            border-radius: 16px; overflow: hidden; box-shadow: 0 30px 80px -30px #000; }
+  #player .hd { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  #player .hd .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #player .hd .d { color: var(--dim); font-size: 12px; white-space: nowrap; }
+  #player .hd .sp { flex: 1; }
+  #player .hd a, #player .hd button { font: inherit; font-size: 13px; background: none; border: 0; cursor: pointer; color: var(--accent); padding: 4px 6px; }
+  #player .hd .x { color: var(--dim); font-size: 16px; }
+  #player .stage { position: relative; aspect-ratio: 16 / 9; background: #000; }
+  #player .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  #player .ft { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); background: var(--panel2); }
+  #player .ft button { font: inherit; font-size: 13px; background: var(--panel); color: var(--fg); border: 1px solid var(--line);
+            border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+  #player .ft button:disabled { opacity: .4; cursor: default; }
+  #player .ft .pos { color: var(--dim); font-size: 12px; margin-left: auto; }
+  #player:fullscreen .sheet { width: 100vw; max-width: none; border-radius: 0; border: 0; }
   footer { color: #566072; font-size: 12px; margin-top: 48px; border-top: 1px solid var(--line); padding-top: 16px; }
   @media (max-width: 520px) { .grid, .grid.styles { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <header>
-  <a class="brand" href="#/"><b>dance_videos</b><span>13 lessons · 7.6 GB · streamed from Google Drive</span></a>
+  <a class="brand" href="#/"><b>dance_videos</b><span>15 lessons · 8.9 GB · streamed from Google Drive</span></a>
   <nav id="crumbs"></nav>
   <div class="tools hidden" id="tools">
     <input type="search" id="q" placeholder="Filter lessons…  ( / )" autocomplete="off">
@@ -72,9 +91,10 @@
   </div>
 </header>
 <main id="view"></main>
+<div id="player" class="hidden" role="dialog" aria-modal="true"></div>
 <footer>Players are Google Drive's own — nothing is re-hosted here. If a lesson asks for access, the Drive folder hasn't been shared with your Google account.</footer>
 <script>
-  const DATA = [{"name":"kizomba","slug":"kizomba","courses":[{"name":"Beginner","slug":"beginner","lessons":[{"id":"1J25tHL6ilUqSo4WHJvUn7Mh2c2ai9AsH","title":"01 - Basic, 3 Steps, 5 Steps, Slow Motion and Rotation","size":757518345,"seconds":1408,"poster":"thumbs/Beginner/01%20-%20Basic%2C%203%20Steps%2C%205%20Steps%2C%20Slow%20Motion%20and%20Rotation.jpg"},{"id":"1iHQv_AlKfGNp1uZPcEYd7vGnkHtsaisK","title":"02 - Woman and Man Saida","size":745298861,"seconds":1048,"poster":"thumbs/Beginner/02%20-%20Woman%20and%20Man%20Saida.jpg"},{"id":"1GxPpRp09luymp_Jh5o5B1jqEkG-6DGie","title":"03 - Balanced move and Touch Steps plus Longer & Double Women Saida","size":598027872,"seconds":1100,"poster":"thumbs/Beginner/03%20-%20Balanced%20move%20and%20Touch%20Steps%20plus%20Longer%20%26%20Double%20Women%20Saida.jpg"},{"id":"1RjroWgJWDa98_ATrOYGW9EgWc8bsHiNE","title":"04 - Mixt Saida & complicated Mixt Saida","size":571839999,"seconds":1056,"poster":"thumbs/Beginner/04%20-%20Mixt%20Saida%20%26%20complicated%20Mixt%20Saida.jpg"},{"id":"1GaVf1nhVyMmjq9c1V6PxpGdAnHNfAzER","title":"05 - Pivot (slow & normal version)","size":611821602,"seconds":1126,"poster":"thumbs/Beginner/05%20-%20Pivot%20(slow%20%26%20normal%20version).jpg"},{"id":"13Cz9-tb53MEfkq11Asu2THn1Cvyqvebe","title":"06 - Normal & Infinite Square","size":543711946,"seconds":1014,"poster":"thumbs/Beginner/06%20-%20Normal%20%26%20Infinite%20Square.jpg"},{"id":"1ySU1R7EsEAjAEPBSE3pDJQ8n2Xxxe4pG","title":"07 - Follower turn, meet her halfway, and The Walk","size":599724969,"seconds":1113,"poster":"thumbs/Beginner/07%20-%20Follower%20turn%2C%20meet%20her%20halfway%2C%20and%20The%20Walk.jpg"},{"id":"1TRfAyM7biT2CAsfO_d0KbS3naaCavZaq","title":"08 - Shadow In & Out Woman & Saida Shadow version","size":525602011,"seconds":990,"poster":"thumbs/Beginner/08%20-%20Shadow%20In%20%26%20Out%20Woman%20%26%20Saida%20Shadow%20version.jpg"},{"id":"1uJtpMAptB6Bmlv9whVibhXL9kHO4fF5M","title":"09 - Ocho (slow & normal)","size":524290641,"seconds":978,"poster":"thumbs/Beginner/09%20-%20Ocho%20(slow%20%26%20normal).jpg"},{"id":"1_T2lL45V9fShM6II0HNsYVCxccDgAoPC","title":"11 - Saida & Friends","size":544394948,"seconds":1007,"poster":"thumbs/Beginner/11%20-%20Saida%20%26%20Friends.jpg"},{"id":"1N1gOZPT6KWFYrgP0CuGj1ATabx1yo6xq","title":"12 - Playing with the directions","size":559350266,"seconds":1032,"poster":"thumbs/Beginner/12%20-%20Playing%20with%20the%20directions.jpg"},{"id":"1csxzlsVQ-Xchx6uBXBS1DXL8tyFdwl7v","title":"14 - Quick Steps and Double Lean","size":507984806,"seconds":908,"poster":"thumbs/Beginner/14%20-%20Quick%20Steps%20and%20Double%20Lean.jpg"},{"id":"1X3mAmo5kN8949Cw7iMEdfY_4YalBtDlt","title":"15 - Shadow Walk & Stuff","size":498639554,"seconds":937,"poster":"thumbs/Beginner/15%20-%20Shadow%20Walk%20%26%20Stuff.jpg"}],"bytes":7588205820,"seconds":13717,"poster":"thumbs/Beginner/01%20-%20Basic%2C%203%20Steps%2C%205%20Steps%2C%20Slow%20Motion%20and%20Rotation.jpg"}]}];
+  const DATA = [{"name":"kizomba","slug":"kizomba","courses":[{"name":"Beginner","slug":"beginner","lessons":[{"id":"1J25tHL6ilUqSo4WHJvUn7Mh2c2ai9AsH","title":"01 - Basic, 3 Steps, 5 Steps, Slow Motion and Rotation","size":757518345,"seconds":1408,"poster":"thumbs/Beginner/01%20-%20Basic%2C%203%20Steps%2C%205%20Steps%2C%20Slow%20Motion%20and%20Rotation.jpg"},{"id":"1iHQv_AlKfGNp1uZPcEYd7vGnkHtsaisK","title":"02 - Woman and Man Saida","size":745298861,"seconds":1048,"poster":"thumbs/Beginner/02%20-%20Woman%20and%20Man%20Saida.jpg"},{"id":"1GxPpRp09luymp_Jh5o5B1jqEkG-6DGie","title":"03 - Balanced move and Touch Steps plus Longer & Double Women Saida","size":598027872,"seconds":1100,"poster":"thumbs/Beginner/03%20-%20Balanced%20move%20and%20Touch%20Steps%20plus%20Longer%20%26%20Double%20Women%20Saida.jpg"},{"id":"1RjroWgJWDa98_ATrOYGW9EgWc8bsHiNE","title":"04 - Mixt Saida & complicated Mixt Saida","size":571839999,"seconds":1056,"poster":"thumbs/Beginner/04%20-%20Mixt%20Saida%20%26%20complicated%20Mixt%20Saida.jpg"},{"id":"1GaVf1nhVyMmjq9c1V6PxpGdAnHNfAzER","title":"05 - Pivot (slow & normal version)","size":611821602,"seconds":1126,"poster":"thumbs/Beginner/05%20-%20Pivot%20(slow%20%26%20normal%20version).jpg"},{"id":"13Cz9-tb53MEfkq11Asu2THn1Cvyqvebe","title":"06 - Normal & Infinite Square","size":543711946,"seconds":1014,"poster":"thumbs/Beginner/06%20-%20Normal%20%26%20Infinite%20Square.jpg"},{"id":"1ySU1R7EsEAjAEPBSE3pDJQ8n2Xxxe4pG","title":"07 - Follower turn, meet her halfway, and The Walk","size":599724969,"seconds":1113,"poster":"thumbs/Beginner/07%20-%20Follower%20turn%2C%20meet%20her%20halfway%2C%20and%20The%20Walk.jpg"},{"id":"1TRfAyM7biT2CAsfO_d0KbS3naaCavZaq","title":"08 - Shadow In & Out Woman & Saida Shadow version","size":525602011,"seconds":990,"poster":"thumbs/Beginner/08%20-%20Shadow%20In%20%26%20Out%20Woman%20%26%20Saida%20Shadow%20version.jpg"},{"id":"1uJtpMAptB6Bmlv9whVibhXL9kHO4fF5M","title":"09 - Ocho (slow & normal)","size":524290641,"seconds":978,"poster":"thumbs/Beginner/09%20-%20Ocho%20(slow%20%26%20normal).jpg"},{"id":"1m0uUkjft3rGgzwsxXl6GPHnClEhO9Kdp","title":"10 - Side Lean & Rhythm variations","size":691903484,"seconds":1306,"poster":"thumbs/Beginner/10%20-%20Side%20Lean%20%26%20Rhythm%20variations.jpg"},{"id":"1_T2lL45V9fShM6II0HNsYVCxccDgAoPC","title":"11 - Saida & Friends","size":544394948,"seconds":1007,"poster":"thumbs/Beginner/11%20-%20Saida%20%26%20Friends.jpg"},{"id":"1N1gOZPT6KWFYrgP0CuGj1ATabx1yo6xq","title":"12 - Playing with the directions","size":559350266,"seconds":1032,"poster":"thumbs/Beginner/12%20-%20Playing%20with%20the%20directions.jpg"},{"id":"1csxzlsVQ-Xchx6uBXBS1DXL8tyFdwl7v","title":"14 - Quick Steps and Double Lean","size":507984806,"seconds":908,"poster":"thumbs/Beginner/14%20-%20Quick%20Steps%20and%20Double%20Lean.jpg"},{"id":"1X3mAmo5kN8949Cw7iMEdfY_4YalBtDlt","title":"15 - Shadow Walk & Stuff","size":498639554,"seconds":937,"poster":"thumbs/Beginner/15%20-%20Shadow%20Walk%20%26%20Stuff.jpg"},{"id":"1Jw7MNQmnGam7_9CS3vAoszXbEgRiUekK","title":"16 - Back and Forth","size":655855301,"seconds":1190,"poster":"thumbs/Beginner/16%20-%20Back%20and%20Forth.jpg"}],"bytes":8935964605,"seconds":16213,"poster":"thumbs/Beginner/01%20-%20Basic%2C%203%20Steps%2C%205%20Steps%2C%20Slow%20Motion%20and%20Rotation.jpg"}]}];
   const LAST = 'dance_videos:last';
   const view = document.getElementById('view');
   const crumbs = document.getElementById('crumbs');
@@ -151,11 +171,11 @@
       count.textContent = n === cards.length ? '' : n + ' of ' + cards.length;
       if (empty) empty.classList.toggle('hidden', n !== 0);
     };
-    for (const el of cards) {
+    cards.forEach((el, i) => {
       el.tabIndex = 0;
-      el.addEventListener('click', () => openPlayer(el));
-      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayer(el); } });
-    }
+      el.addEventListener('click', () => openPlayer({ list, index: i }));
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayer({ list, index: i }); } });
+    });
     q.oninput = () => {
       const needle = q.value.trim().toLowerCase();
       for (const c of cards) c.classList.toggle('hidden', needle && !c.dataset.name.includes(needle));
@@ -169,34 +189,61 @@
     } catch {}
   }
 
-  function openPlayer(el) {
-    if (el.classList.contains('playing')) return;
-    const { id, title, size } = el.dataset;
-    el.classList.add('playing');
-    el.innerHTML = '<div class="frame"><iframe src="https://drive.google.com/file/d/' + id + '/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>' +
-      '<div class="meta"><span class="t"></span><span class="d"></span></div>' +
-      '<div class="bar"><a href="https://drive.google.com/file/d/' + id + '/view" target="_blank" rel="noopener">Open in Drive ↗</a>' +
-      '<button class="x" type="button">Close ✕</button></div>';
-    const meta = el.querySelectorAll('.meta span');
-    meta[0].textContent = title;
-    meta[1].textContent = size || '';
-    el.querySelector('.x').addEventListener('click', (e) => { e.stopPropagation(); closePlayer(el); });
-    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    try { localStorage.setItem(LAST, id); } catch {}
+  const player = document.getElementById('player');
+  const state = { list: [], index: 0 };
+
+  function openPlayer({ list, index }) {
+    state.list = list;
+    state.index = index;
+    renderPlayer();
+    player.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
   }
 
-  function closePlayer(el) {
-    const { id, title, size } = el.dataset;
-    el.classList.remove('playing');
-    el.innerHTML = '<div class="thumb"><span class="ph">▶</span></div>' +
-      '<div class="meta"><span class="t"></span><span class="d"></span></div>';
-    const meta = el.querySelectorAll('.meta span');
-    meta[0].textContent = title;
-    meta[1].textContent = size || '';
-    const l = (DATA.flatMap((s) => s.courses).flatMap((c) => c.lessons)).find((x) => x.id === id);
-    if (l && l.poster) el.querySelector('.thumb').insertAdjacentHTML('afterbegin', '<img loading="lazy" alt="" src="' + esc(l.poster) + '">');
-    if (l && l.seconds) el.querySelector('.thumb').insertAdjacentHTML('beforeend', '<span class="badge">' + hms(l.seconds) + '</span>');
+  function renderPlayer() {
+    const l = state.list[state.index];
+    if (!l) return;
+    player.innerHTML =
+      '<div class="sheet">' +
+        '<div class="hd">' +
+          '<span class="t">' + esc(l.title) + '</span>' +
+          '<span class="d">' + mb(l.size) + (l.seconds ? ' · ' + hms(l.seconds) : '') + '</span>' +
+          '<span class="sp"></span>' +
+          '<button class="fs" type="button" title="Fullscreen">⛶</button>' +
+          '<a href="https://drive.google.com/file/d/' + l.id + '/view" target="_blank" rel="noopener">Open in Drive ↗</a>' +
+          '<button class="x" type="button" title="Close (Esc)">✕</button>' +
+        '</div>' +
+        '<div class="stage"><iframe src="https://drive.google.com/file/d/' + l.id + '/preview" allow="autoplay; fullscreen" allowfullscreen></iframe></div>' +
+        '<div class="ft">' +
+          '<button class="prev" type="button"' + (state.index <= 0 ? ' disabled' : '') + '>← Previous</button>' +
+          '<button class="next" type="button"' + (state.index >= state.list.length - 1 ? ' disabled' : '') + '>Next →</button>' +
+          '<span class="pos">' + (state.index + 1) + ' of ' + state.list.length + '</span>' +
+        '</div>' +
+      '</div>';
+    player.querySelector('.x').onclick = closePlayer;
+    player.querySelector('.prev').onclick = () => step(-1);
+    player.querySelector('.next').onclick = () => step(1);
+    player.querySelector('.fs').onclick = () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else player.requestFullscreen?.();
+    };
+    try { localStorage.setItem(LAST, l.id); } catch {}
   }
+
+  function step(delta) {
+    const n = state.index + delta;
+    if (n < 0 || n >= state.list.length) return;
+    state.index = n;
+    renderPlayer();
+  }
+
+  function closePlayer() {
+    player.classList.add('hidden');
+    player.innerHTML = '';
+    document.body.style.overflow = '';
+  }
+
+  player.addEventListener('click', (e) => { if (e.target === player) closePlayer(); });
 
   function route() {
     const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
@@ -210,12 +257,14 @@
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    const modalOpen = !player.classList.contains('hidden');
+    if (e.key === '/' && !modalOpen && document.activeElement !== q) { e.preventDefault(); q.focus(); }
     if (e.key === 'Escape') {
+      if (modalOpen) return closePlayer();
       if (q.value) { q.value = ''; q.oninput && q.oninput(); }
-      const open = view.querySelector('.card.playing');
-      if (open) closePlayer(open);
     }
+    if (modalOpen && e.key === 'ArrowLeft') step(-1);
+    if (modalOpen && e.key === 'ArrowRight') step(1);
   });
   window.addEventListener('hashchange', route);
   route();
