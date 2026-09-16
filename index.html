@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dance_videos</title>
+<meta name="description" content="Dance course archive — 13 lessons streamed from Google Drive.">
+<style>
+  :root { color-scheme: dark; --bg:#0b0d12; --panel:#14171f; --panel2:#1a1e27; --line:#242a36;
+          --fg:#e8eaf0; --dim:#98a2b3; --accent:#6ee7b7; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: radial-gradient(1200px 600px at 50% -240px, #17222e, var(--bg)) fixed, var(--bg);
+         color: var(--fg); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         padding: 0 clamp(14px, 4vw, 44px) 72px; }
+  header { position: sticky; top: 0; z-index: 10; margin: 0 calc(-1 * clamp(14px, 4vw, 44px)) 10px;
+           padding: 18px clamp(14px, 4vw, 44px) 14px; background: rgba(11,13,18,.84);
+           backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid var(--line); }
+  a { color: inherit; }
+  .brand { display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; }
+  .brand b { font-size: clamp(17px, 2.3vw, 22px); font-weight: 650; letter-spacing: -.01em; }
+  .brand span { color: var(--dim); font-size: 13px; }
+  nav { margin-top: 8px; color: var(--dim); font-size: 13px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  nav a { color: var(--dim); text-decoration: none; }
+  nav a:hover { color: var(--fg); }
+  nav .sep { color: #3d4453; }
+  nav .here { color: var(--fg); }
+  .tools { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  input[type=search] { flex: 1 1 240px; max-width: 420px; padding: 10px 13px; border-radius: 10px;
+           border: 1px solid var(--line); background: var(--panel); color: inherit; font: inherit; }
+  input[type=search]:focus { outline: 2px solid #2f4a5f; outline-offset: 1px; }
+  .count { color: var(--dim); font-size: 13px; }
+  h1 { font-size: clamp(20px, 3vw, 28px); margin: 22px 0 6px; font-weight: 650; letter-spacing: -.015em; }
+  .lede { color: var(--dim); margin: 0 0 22px; }
+  h2 { font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #cbd5e1; margin: 30px 0 14px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); }
+  .grid.styles { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer;
+          transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease; text-decoration: none; display: block; }
+  .card:hover, .card:focus-visible { transform: translateY(-2px); border-color: #39415470; box-shadow: 0 12px 34px -14px #000; }
+  .thumb { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(135deg, #1b2431, #0d1117); overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .94; }
+  .thumb .ph { position: absolute; inset: 0; display: grid; place-items: center; color: #4b5566; font-size: 26px; font-weight: 600; }
+  .play { position: absolute; inset: 0; display: grid; place-items: center; font-size: 28px; color: #fff; opacity: 0;
+          background: linear-gradient(180deg, #0000, #000a); transition: opacity .16s ease; }
+  .card:hover .play { opacity: 1; }
+  .badge { position: absolute; right: 8px; bottom: 8px; padding: 2px 7px; border-radius: 6px; font-size: 11px;
+           background: #000000b8; color: #e5e7eb; font-variant-numeric: tabular-nums; }
+  .meta { display: flex; flex-direction: column; gap: 2px; padding: 11px 13px 13px; min-width: 0; }
+  .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .d { color: var(--dim); font-size: 12px; }
+  .card.playing { cursor: default; transform: none; box-shadow: none; }
+  .card.playing .frame { position: relative; aspect-ratio: 16 / 9; background: #000; }
+  .card.playing iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 13px;
+         border-top: 1px solid var(--line); background: var(--panel2); }
+  .bar a, .bar button { font: inherit; font-size: 13px; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; }
+  .bar .x { color: var(--dim); }
+  .empty { color: var(--dim); padding: 36px 0; }
+  .hidden { display: none !important; }
+  footer { color: #566072; font-size: 12px; margin-top: 48px; border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 520px) { .grid, .grid.styles { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="#/"><b>dance_videos</b><span>13 lessons · 7.6 GB · streamed from Google Drive</span></a>
+  <nav id="crumbs"></nav>
+  <div class="tools hidden" id="tools">
+    <input type="search" id="q" placeholder="Filter lessons…  ( / )" autocomplete="off">
+    <span class="count" id="count"></span>
+  </div>
+</header>
+<main id="view"></main>
+<footer>Players are Google Drive's own — nothing is re-hosted here. If a lesson asks for access, the Drive folder hasn't been shared with your Google account.</footer>
+<script>
+  const DATA = [{"name":"kizomba","slug":"kizomba","courses":[{"name":"Beginner","slug":"beginner","lessons":[{"id":"1J25tHL6ilUqSo4WHJvUn7Mh2c2ai9AsH","title":"01 - Basic, 3 Steps, 5 Steps, Slow Motion and Rotation","size":757518345,"seconds":1408,"poster":"thumbs/Beginner/01%20-%20Basic%2C%203%20Steps%2C%205%20Steps%2C%20Slow%20Motion%20and%20Rotation.jpg"},{"id":"1iHQv_AlKfGNp1uZPcEYd7vGnkHtsaisK","title":"02 - Woman and Man Saida","size":745298861,"seconds":1048,"poster":"thumbs/Beginner/02%20-%20Woman%20and%20Man%20Saida.jpg"},{"id":"1GxPpRp09luymp_Jh5o5B1jqEkG-6DGie","title":"03 - Balanced move and Touch Steps plus Longer & Double Women Saida","size":598027872,"seconds":1100,"poster":"thumbs/Beginner/03%20-%20Balanced%20move%20and%20Touch%20Steps%20plus%20Longer%20%26%20Double%20Women%20Saida.jpg"},{"id":"1RjroWgJWDa98_ATrOYGW9EgWc8bsHiNE","title":"04 - Mixt Saida & complicated Mixt Saida","size":571839999,"seconds":1056,"poster":"thumbs/Beginner/04%20-%20Mixt%20Saida%20%26%20complicated%20Mixt%20Saida.jpg"},{"id":"1GaVf1nhVyMmjq9c1V6PxpGdAnHNfAzER","title":"05 - Pivot (slow & normal version)","size":611821602,"seconds":1126,"poster":"thumbs/Beginner/05%20-%20Pivot%20(slow%20%26%20normal%20version).jpg"},{"id":"13Cz9-tb53MEfkq11Asu2THn1Cvyqvebe","title":"06 - Normal & Infinite Square","size":543711946,"seconds":1014,"poster":"thumbs/Beginner/06%20-%20Normal%20%26%20Infinite%20Square.jpg"},{"id":"1ySU1R7EsEAjAEPBSE3pDJQ8n2Xxxe4pG","title":"07 - Follower turn, meet her halfway, and The Walk","size":599724969,"seconds":1113,"poster":"thumbs/Beginner/07%20-%20Follower%20turn%2C%20meet%20her%20halfway%2C%20and%20The%20Walk.jpg"},{"id":"1TRfAyM7biT2CAsfO_d0KbS3naaCavZaq","title":"08 - Shadow In & Out Woman & Saida Shadow version","size":525602011,"seconds":990,"poster":"thumbs/Beginner/08%20-%20Shadow%20In%20%26%20Out%20Woman%20%26%20Saida%20Shadow%20version.jpg"},{"id":"1uJtpMAptB6Bmlv9whVibhXL9kHO4fF5M","title":"09 - Ocho (slow & normal)","size":524290641,"seconds":978,"poster":"thumbs/Beginner/09%20-%20Ocho%20(slow%20%26%20normal).jpg"},{"id":"1_T2lL45V9fShM6II0HNsYVCxccDgAoPC","title":"11 - Saida & Friends","size":544394948,"seconds":1007,"poster":"thumbs/Beginner/11%20-%20Saida%20%26%20Friends.jpg"},{"id":"1N1gOZPT6KWFYrgP0CuGj1ATabx1yo6xq","title":"12 - Playing with the directions","size":559350266,"seconds":1032,"poster":"thumbs/Beginner/12%20-%20Playing%20with%20the%20directions.jpg"},{"id":"1csxzlsVQ-Xchx6uBXBS1DXL8tyFdwl7v","title":"14 - Quick Steps and Double Lean","size":507984806,"seconds":908,"poster":"thumbs/Beginner/14%20-%20Quick%20Steps%20and%20Double%20Lean.jpg"},{"id":"1X3mAmo5kN8949Cw7iMEdfY_4YalBtDlt","title":"15 - Shadow Walk & Stuff","size":498639554,"seconds":937,"poster":"thumbs/Beginner/15%20-%20Shadow%20Walk%20%26%20Stuff.jpg"}],"bytes":7588205820,"seconds":13717,"poster":"thumbs/Beginner/01%20-%20Basic%2C%203%20Steps%2C%205%20Steps%2C%20Slow%20Motion%20and%20Rotation.jpg"}]}];
+  const LAST = 'dance_videos:last';
+  const view = document.getElementById('view');
+  const crumbs = document.getElementById('crumbs');
+  const tools = document.getElementById('tools');
+  const q = document.getElementById('q');
+  const count = document.getElementById('count');
+
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const hms = (s) => (Math.floor(s / 3600) ? Math.floor(s / 3600) + ':' : '') +
+    String(Math.floor((s % 3600) / 60)).padStart(2, '0') + ':' + String(Math.round(s % 60)).padStart(2, '0');
+  const mb = (b) => (b >= 1e9 ? (b / 1e9).toFixed(1) + ' GB' : (b / 1e6).toFixed(0) + ' MB');
+  const crumb = (parts) => parts.map((p, i) => (p.href && i < parts.length - 1
+      ? '<a href="' + p.href + '">' + esc(p.name) + '</a>'
+      : '<span class="here">' + esc(p.name) + '</span>')
+    + (i < parts.length - 1 ? ' <span class="sep">/</span> ' : '')).join('');
+
+  const style = (s) => DATA.find((x) => x.slug === s);
+  const courseOf = (st, c) => st && st.courses.find((x) => x.slug === c);
+
+  function card(l) {
+    return '<article class="card" data-id="' + l.id + '" data-name="' + esc(l.title.toLowerCase()) + '" data-title="' + esc(l.title) + '" data-size="' + mb(l.size) + '">' +
+      '<div class="thumb">' +
+        (l.poster ? '<img loading="lazy" alt="" src="' + esc(l.poster) + '">' : '<span class="ph">▶</span>') +
+        '<span class="play" aria-hidden="true">▶</span>' +
+        (l.seconds ? '<span class="badge">' + hms(l.seconds) + '</span>' : '') +
+      '</div>' +
+      '<div class="meta"><span class="t">' + esc(l.title) + '</span><span class="d">' + mb(l.size) + '</span></div>' +
+    '</article>';
+  }
+
+  function home() {
+    crumbs.innerHTML = crumb([{ name: 'dance_videos' }]);
+    tools.classList.add('hidden');
+    view.innerHTML = '<h1>Pick a dance</h1><p class="lede">Course archive, played straight from Google Drive.</p>' +
+      '<div class="grid styles">' + DATA.map((s) => {
+        const n = s.courses.reduce((a, c) => a + c.lessons.length, 0);
+        const b = s.courses.reduce((a, c) => a + c.bytes, 0);
+        const secs = s.courses.reduce((a, c) => a + c.seconds, 0);
+        const poster = (s.courses.find((c) => c.poster) || {}).poster;
+        return '<a class="card" href="#/' + s.slug + '"><div class="thumb">' +
+          (poster ? '<img alt="" src="' + esc(poster) + '">' : '<span class="ph">' + esc(s.name[0]) + '</span>') +
+          '<span class="play">▶</span></div><div class="meta"><span class="t">' + esc(s.name) + '</span>' +
+          '<span class="d">' + s.courses.length + ' course' + (s.courses.length > 1 ? 's' : '') + ' · ' + n + ' lessons' +
+          (secs ? ' · ' + Math.round(secs / 60) + ' min' : '') + ' · ' + mb(b) + '</span></div></a>';
+      }).join('') + '</div>';
+  }
+
+  function styleView(st) {
+    crumbs.innerHTML = crumb([{ name: 'dance_videos', href: '#/' }, { name: st.name }]);
+    tools.classList.add('hidden');
+    view.innerHTML = '<h1>' + esc(st.name) + '</h1><p class="lede">' + st.courses.length + ' courses</p>' +
+      '<div class="grid">' + st.courses.map((c) => '<a class="card" href="#/' + st.slug + '/' + c.slug + '">' +
+        '<div class="thumb">' + (c.poster ? '<img alt="" src="' + esc(c.poster) + '">' : '<span class="ph">▶</span>') +
+        '<span class="play">▶</span><span class="badge">' + c.lessons.length + '</span></div>' +
+        '<div class="meta"><span class="t">' + esc(c.name) + '</span><span class="d">' + c.lessons.length + ' lessons' +
+        (c.seconds ? ' · ' + Math.round(c.seconds / 60) + ' min' : '') + ' · ' + mb(c.bytes) + '</span></div></a>').join('') + '</div>';
+  }
+
+  function courseView(st, c) {
+    crumbs.innerHTML = crumb([{ name: 'dance_videos', href: '#/' }, { name: st.name, href: '#/' + st.slug }, { name: c.name }]);
+    tools.classList.remove('hidden');
+    q.value = '';
+    view.innerHTML = '<h1>' + esc(c.name) + '</h1><p class="lede">' + c.lessons.length + ' lessons · ' + mb(c.bytes) +
+      (c.seconds ? ' · ' + Math.round(c.seconds / 60) + ' min' : '') + '</p><div class="grid">' +
+      c.lessons.map(card).join('') + '</div><div class="empty hidden" id="empty">No lessons match that filter.</div>';
+    wire(c.lessons);
+  }
+
+  function wire(list) {
+    const cards = [...view.querySelectorAll('.card')];
+    const empty = document.getElementById('empty');
+    const refresh = () => {
+      const n = cards.filter((c) => !c.classList.contains('hidden')).length;
+      count.textContent = n === cards.length ? '' : n + ' of ' + cards.length;
+      if (empty) empty.classList.toggle('hidden', n !== 0);
+    };
+    for (const el of cards) {
+      el.tabIndex = 0;
+      el.addEventListener('click', () => openPlayer(el));
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayer(el); } });
+    }
+    q.oninput = () => {
+      const needle = q.value.trim().toLowerCase();
+      for (const c of cards) c.classList.toggle('hidden', needle && !c.dataset.name.includes(needle));
+      refresh();
+    };
+    refresh();
+    try {
+      const last = localStorage.getItem(LAST);
+      const el = cards.find((c) => c.dataset.id === last);
+      if (el) el.querySelector('.thumb')?.insertAdjacentHTML('beforeend', '<span class="badge" style="left:8px;right:auto">last played</span>');
+    } catch {}
+  }
+
+  function openPlayer(el) {
+    if (el.classList.contains('playing')) return;
+    const { id, title, size } = el.dataset;
+    el.classList.add('playing');
+    el.innerHTML = '<div class="frame"><iframe src="https://drive.google.com/file/d/' + id + '/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>' +
+      '<div class="meta"><span class="t"></span><span class="d"></span></div>' +
+      '<div class="bar"><a href="https://drive.google.com/file/d/' + id + '/view" target="_blank" rel="noopener">Open in Drive ↗</a>' +
+      '<button class="x" type="button">Close ✕</button></div>';
+    const meta = el.querySelectorAll('.meta span');
+    meta[0].textContent = title;
+    meta[1].textContent = size || '';
+    el.querySelector('.x').addEventListener('click', (e) => { e.stopPropagation(); closePlayer(el); });
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    try { localStorage.setItem(LAST, id); } catch {}
+  }
+
+  function closePlayer(el) {
+    const { id, title, size } = el.dataset;
+    el.classList.remove('playing');
+    el.innerHTML = '<div class="thumb"><span class="ph">▶</span></div>' +
+      '<div class="meta"><span class="t"></span><span class="d"></span></div>';
+    const meta = el.querySelectorAll('.meta span');
+    meta[0].textContent = title;
+    meta[1].textContent = size || '';
+    const l = (DATA.flatMap((s) => s.courses).flatMap((c) => c.lessons)).find((x) => x.id === id);
+    if (l && l.poster) el.querySelector('.thumb').insertAdjacentHTML('afterbegin', '<img loading="lazy" alt="" src="' + esc(l.poster) + '">');
+    if (l && l.seconds) el.querySelector('.thumb').insertAdjacentHTML('beforeend', '<span class="badge">' + hms(l.seconds) + '</span>');
+  }
+
+  function route() {
+    const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
+    if (!parts.length) return home();
+    const st = style(parts[0]);
+    if (!st) return home();
+    if (parts.length === 1) return styleView(st);
+    const c = courseOf(st, parts[1]);
+    if (!c) return styleView(st);
+    return courseView(st, c);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    if (e.key === 'Escape') {
+      if (q.value) { q.value = ''; q.oninput && q.oninput(); }
+      const open = view.querySelector('.card.playing');
+      if (open) closePlayer(open);
+    }
+  });
+  window.addEventListener('hashchange', route);
+  route();
+</script>
+</body>
+</html>
